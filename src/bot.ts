@@ -5,7 +5,7 @@ import { Client } from "discordx";
 export const bot = new Client({
   // To use only guild command
   // botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],
-  botGuilds: ['1130533803333521640'],
+  //botGuilds: ['1130533803333521640'],
 
   // Discord intents
   intents: [
