@@ -108,7 +108,7 @@ export class Scores {
     const mode = gamemode ?? getGameMode(user) === 'keys4' ? 1 : 2;
 
     const { scores } = await request(
-      `/users/scores/recent?id=${user.info.id}&mode=${mode}&limit=5`
+      `/users/scores/best?id=${user.info.id}&mode=${mode}&limit=5`
     );
 
     if (!scores.length) {
