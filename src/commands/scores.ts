@@ -134,7 +134,7 @@ export class Scores {
 
       description += [
         `**${i+1}) [${score.map.title} [${score.map.difficulty_name}]](https://quavergame.com/mapset/map/${score.map.id}) +${score.mods_string}**`,
-        `▸ ${Grades[score.grade]} ▸ **${score.performance_rating.toFixed(2)}PR** ▸ ${score.accuracy.toFixed(2)}% ▸ ${score.ratio.toFixed(2)}:1`,
+        `▸ ${Grades[score.grade]} ▸ **${score.performance_rating.toFixed(2)}PR** ▸ ${score.accuracy.toFixed(2)}% ▸ ${score.ratio.toFixed(2)}:1 @ ${score.scroll_speed/10} :fast_forward:`,
         `▸ ${score.total_score.toLocaleString()} ▸ x${score.max_combo.toLocaleString()} ▸ [${score.count_marv}/${score.count_perf}/${score.count_great}/${score.count_good}/${score.count_okay}/${score.count_miss}]`,
         `▸ Score Set <t:${Math.floor(new Date(score.time).getTime() / 1000)}:R>`,
         `▸ :inbox_tray: [Download Replay](https://api.quavergame.com/d/web/replay/${score.id})\n`
