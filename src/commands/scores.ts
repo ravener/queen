@@ -74,7 +74,7 @@ export class Scores {
       })
       .setDescription(
         [
-          `▸ ${Grades[score.grade]} ▸ **${score.performance_rating.toFixed(2)}PR** ▸ ${score.accuracy.toFixed(2)}% ▸ ${score.ratio.toFixed(2)}:1`,
+          `▸ ${Grades[score.grade]} ▸ **${score.performance_rating.toFixed(2)}PR** ▸ ${score.accuracy.toFixed(2)}% ▸ ${score.ratio.toFixed(2)}:1 ▸ :fast_forward: ${score.scroll_speed}`,
           `▸ ${score.total_score.toLocaleString()} ▸ x${score.max_combo.toLocaleString()} ▸ [${score.count_marv}/${score.count_perf}/${score.count_great}/${score.count_good}/${score.count_okay}/${score.count_miss}]`,
           `▸ :inbox_tray: [Download Replay](https://api.quavergame.com/d/web/replay/${score.id})`
         ].join('\n')
