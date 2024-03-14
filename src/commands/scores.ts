@@ -1,6 +1,7 @@
 import { RateLimit, TIME_UNIT } from '@discordx/utilities';
 import {
   ApplicationCommandOptionType,
+  ButtonStyle,
   CommandInteraction,
   Embed,
   EmbedBuilder
@@ -9,6 +10,11 @@ import { Discord, Guard, Slash, SlashChoice, SlashOption } from 'discordx';
 import { request } from '../utils/api.js';
 import { getGameMode } from '../utils/utils.js';
 import { Grades } from '../utils/emojis.js';
+import {
+  Pagination,
+  PaginationItem,
+  PaginationType
+} from '@discordx/pagination';
 
 @Discord()
 export class Scores {
@@ -51,36 +57,48 @@ export class Scores {
     if (!user) return;
     const mode = gamemode ?? getGameMode(user) === 'keys4' ? 1 : 2;
 
-    const {
-      scores: [score]
-    } = await request(
-      `/users/scores/recent?id=${user.info.id}&mode=${mode}&limit=1`
+    const { scores } = await request(
+      `/users/scores/recent?id=${user.info.id}&mode=${mode}&limit=10`
     );
 
-    if (!score) {
+    if (!scores.length) {
       return interaction.reply({
         content: `No recent plays found for \`${query}\``,
         ephemeral: true
       });
     }
 
-    const embed = new EmbedBuilder()
-      .setColor('#37b3ce')
-      .setTimestamp(new Date(score.time))
-      .setAuthor({
-        name: `${score.map.artist} - ${score.map.title} [${score.map.difficulty_name}] +${score.mods_string}`,
-        iconURL: user.info.avatar_url,
-        url: `https://quavergame.com/mapset/map/${score.map.id}`
-      })
-      .setDescription(
-        [
-          `▸ ${Grades[score.grade]} ▸ **${score.performance_rating.toFixed(2)}PR** ▸ ${score.accuracy.toFixed(2)}% ▸ ${score.ratio.toFixed(2)}:1 @ ${score.scroll_speed/10} :fast_forward:`,
-          `▸ ${score.total_score.toLocaleString()} ▸ x${score.max_combo.toLocaleString()} ▸ [${score.count_marv}/${score.count_perf}/${score.count_great}/${score.count_good}/${score.count_okay}/${score.count_miss}]`,
-          `▸ :inbox_tray: [Download Replay](https://api.quavergame.com/d/web/replay/${score.id})`
-        ].join('\n')
-      );
+    const pages = scores.map((score: any, i: number) => {
+      const embed = new EmbedBuilder()
+        .setColor('#37b3ce')
+        .setTimestamp(new Date(score.time))
+        .setAuthor({
+          name: `${score.map.artist} - ${score.map.title} [${score.map.difficulty_name}] +${score.mods_string}`,
+          iconURL: user.info.avatar_url,
+          url: `https://quavergame.com/mapset/map/${score.map.id}`
+        })
+        .setFooter({ text: `Page ${i + 1}/${scores.length}` })
+        .setDescription(
+          [
+            `▸ ${Grades[score.grade]} ▸ **${score.performance_rating.toFixed(2)}PR** ▸ ${score.accuracy.toFixed(2)}% ▸ ${score.ratio.toFixed(2)}:1 @ ${score.scroll_speed / 10} :arrow_double_down:`,
+            `▸ ${score.total_score.toLocaleString()} ▸ x${score.max_combo.toLocaleString()} ▸ [${score.count_marv}/${score.count_perf}/${score.count_great}/${score.count_good}/${score.count_okay}/${score.count_miss}]`,
+            `▸ :inbox_tray: [Download Replay](https://api.quavergame.com/d/web/replay/${score.id})`
+          ].join('\n')
+        );
 
-    return interaction.reply({ embeds: [embed] });
+      return { embeds: [embed] };
+    });
+
+    const pagination = new Pagination(interaction, pages, {
+      type: PaginationType.Button,
+      start: { label: '◀◀', style: ButtonStyle.Secondary },
+      next: { label: '▶', style: ButtonStyle.Secondary },
+      previous: { label: '◀', style: ButtonStyle.Secondary },
+      end: { label: '▶▶', style: ButtonStyle.Secondary },
+      time: 30 * 1000
+    });
+
+    return pagination.send();
   }
 
   @Slash({ description: "View a user's best plays" })
@@ -108,7 +126,7 @@ export class Scores {
     const mode = gamemode ?? getGameMode(user) === 'keys4' ? 1 : 2;
 
     const { scores } = await request(
-      `/users/scores/best?id=${user.info.id}&mode=${mode}&limit=5`
+      `/users/scores/best?id=${user.info.id}&mode=${mode}&limit=50`
     );
 
     if (!scores.length) {
@@ -118,31 +136,52 @@ export class Scores {
       });
     }
 
-    const embed = new EmbedBuilder()
-      .setColor('#37b3ce')
-      .setThumbnail(user.info.avatar_url)
-      .setAuthor({
-        iconURL: `https://osuflags.omkserver.nl/${user.info.country}-128.png`,
-        name: `Top Quaver ${mode === 2 ? '7K' : '4K'} Plays for ${user.info.username}`,
-        url: `https://quavergame.com/user/${user.info.id}`
-      });
-
+    const pages: PaginationItem[] = [];
     let description = '';
+
+    const pushPage = (i: number) => {
+      const embed = new EmbedBuilder()
+        .setColor('#37b3ce')
+        .setThumbnail(user.info.avatar_url)
+        .setFooter({
+          text: `Page ${(i + 1) / 5}/${Math.ceil(scores.length / 5)}`
+        })
+        .setDescription(description)
+        .setAuthor({
+          iconURL: `https://osuflags.omkserver.nl/${user.info.country}-128.png`,
+          name: `Top Quaver ${mode === 2 ? '7K' : '4K'} Plays for ${user.info.username}`,
+          url: `https://quavergame.com/user/${user.info.id}`
+        });
+
+      pages.push({ embeds: [embed] });
+      description = '';
+    };
 
     for (let i = 0; i < scores.length; i++) {
       const score = scores[i];
 
       description += [
-        `**${i+1}) [${score.map.title} [${score.map.difficulty_name}]](https://quavergame.com/mapset/map/${score.map.id}) +${score.mods_string}**`,
-        `▸ ${Grades[score.grade]} ▸ **${score.performance_rating.toFixed(2)}PR** ▸ ${score.accuracy.toFixed(2)}% ▸ ${score.ratio.toFixed(2)}:1 @ ${score.scroll_speed/10} :fast_forward:`,
+        `**${i + 1}) [${score.map.title} [${score.map.difficulty_name}]](https://quavergame.com/mapset/map/${score.map.id}) +${score.mods_string}**`,
+        `▸ ${Grades[score.grade]} ▸ **${score.performance_rating.toFixed(2)}PR** ▸ ${score.accuracy.toFixed(2)}% ▸ ${score.ratio.toFixed(2)}:1 @ ${score.scroll_speed / 10} :arrow_double_down:`,
         `▸ ${score.total_score.toLocaleString()} ▸ x${score.max_combo.toLocaleString()} ▸ [${score.count_marv}/${score.count_perf}/${score.count_great}/${score.count_good}/${score.count_okay}/${score.count_miss}]`,
         `▸ Score Set <t:${Math.floor(new Date(score.time).getTime() / 1000)}:R>`,
         `▸ :inbox_tray: [Download Replay](https://api.quavergame.com/d/web/replay/${score.id})\n`
       ].join('\n');
+
+      if ((i + 1) % 5 === 0) pushPage(i);
     }
 
-    embed.setDescription(description);
+    if (description) pushPage(scores.length);
 
-    return interaction.reply({ embeds: [embed] });
+    const pagination = new Pagination(interaction, pages, {
+      type: PaginationType.Button,
+      start: { label: '◀◀', style: ButtonStyle.Secondary },
+      next: { label: '▶', style: ButtonStyle.Secondary },
+      previous: { label: '◀', style: ButtonStyle.Secondary },
+      end: { label: '▶▶', style: ButtonStyle.Secondary },
+      time: 30 * 1000
+    });
+
+    return pagination.send();
   }
 }

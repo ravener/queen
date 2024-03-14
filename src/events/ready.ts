@@ -7,7 +7,7 @@ export class Ready {
     // Synchronize applications commands with Discord
     await client.initApplicationCommands();
 
-    console.log('Bot Started');
+    console.log(`Logged in as ${client.user!.tag} (${client.user!.id}) in ${client.guilds.cache.size} servers.`);
 
     // Set an activity.
     client.user!.setActivity({ name: 'Quaver' });
