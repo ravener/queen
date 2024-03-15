@@ -2,7 +2,7 @@ import type { ArgsOf } from 'discordx';
 import { Discord, On } from 'discordx';
 import { request } from '../utils/api.js';
 import { EmbedBuilder } from 'discord.js';
-import { getDuration, ratingEmoji } from '../utils/utils.js';
+import { calculateRating, getDuration, ratingEmoji } from '../utils/utils.js';
 
 @Discord()
 export class Example {
@@ -50,7 +50,8 @@ export class Example {
           `${emoji} __[${map.game_mode === 1 ? '4K' : '7K'}] ${map.difficulty_name}__`,
           `▸ **Difficulty:** ${map.difficulty_rating.toFixed(2)} ▸ **Max Combo** x${map.count_hitobject_normal + map.count_hitobject_long * 2}`,
           `▸ **Normal Objects:** ${map.count_hitobject_normal.toLocaleString()} ▸ **LNs:** ${map.count_hitobject_long.toLocaleString()} (${Math.floor((map.count_hitobject_long / (map.count_hitobject_normal + map.count_hitobject_long)) * 100)}%) ▸ **NPS:** ${NPS}`,
-          `▸ **Passes/Fails:** ${map.play_count.toLocaleString()} / ${map.fail_count.toLocaleString()}`
+          `▸ **Passes/Fails:** ${map.play_count.toLocaleString()} / ${map.fail_count.toLocaleString()}`,
+          `▸ **PR:** ○ **95%**–${calculateRating(map.difficulty_rating, 95).toFixed(2)} ○ **99%**–${calculateRating(map.difficulty_rating, 99).toFixed(2)} ○ **100%**–${calculateRating(map.difficulty_rating, 100).toFixed(2)}`
         ].join('\n')
       );
 

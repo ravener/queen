@@ -18,6 +18,7 @@ export function getDuration(time: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
+// TODO: Find better emojis for these, perhaps custom emojis?
 export function ratingEmoji(rating: number): string {
   // Beginner
   if (rating < 1) return ':white_heart:';
@@ -36,4 +37,8 @@ export function ratingEmoji(rating: number): string {
 
   // Master
   return ':grey_heart:';
+}
+
+export function calculateRating(difficulty: number, accuracy: number): number {
+  return difficulty * Math.pow(accuracy / 98, 6);
 }
