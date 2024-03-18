@@ -1,3 +1,6 @@
+import { CommandInteraction } from "discord.js";
+import { User } from "../entity/User.js";
+
 export function getGameMode(user: any): string {
   // Sometimes the user's default game mode is given, sometimes not.
   const mode = user.info.information?.default_mode;
@@ -41,4 +44,20 @@ export function ratingEmoji(rating: number): string {
 
 export function calculateRating(difficulty: number, accuracy: number): number {
   return difficulty * Math.pow(accuracy / 98, 6);
+}
+
+export async function resolveUser(interaction: CommandInteraction): Promise<string | undefined> {
+  const { id } = interaction.user;
+  const user = await User.findOneBy({ id });
+
+  if (!user) {
+    await interaction.reply({
+      content: 'You do not have an account linked, either run the command and include a username/id or link your account with the `/link` command.',
+      ephemeral: true
+    });
+
+    return;
+  }
+
+  return user.quaverID;
 }

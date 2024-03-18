@@ -1,8 +1,10 @@
+import 'dotenv/config';
 import { dirname, resolve } from "@discordx/importer";
 import chokidar from "chokidar";
 import { DIService, MetadataStorage } from "discordx";
 
 import { bot } from "./bot.js";
+import { AppDataSource } from './data-source.js';
 
 // The following syntax should be used in the commonjs environment
 // const importPattern =  __dirname + "/{events,commands}/**/*.{ts,js}"
@@ -58,6 +60,7 @@ async function run() {
 
   // Load commands
   await LoadFiles(importPattern);
+  await AppDataSource.initialize();
 
   // Let's start the bot
   if (!process.env.BOT_TOKEN) {

@@ -5,7 +5,7 @@ import {
   EmbedBuilder
 } from 'discord.js';
 import { Discord, Guard, Slash, SlashChoice, SlashOption } from 'discordx';
-import { getGameMode } from '../utils/utils.js';
+import { getGameMode, resolveUser } from '../utils/utils.js';
 import { RateLimit, TIME_UNIT } from '@discordx/utilities';
 import { request } from '../utils/api.js';
 
@@ -16,11 +16,10 @@ export class Quaver {
   async profile(
     @SlashOption({
       description: 'User ID or Name to view.',
-      required: true,
       name: 'user',
       type: ApplicationCommandOptionType.String
     })
-    query: string,
+    query: string | undefined,
     @SlashChoice({ name: '4 Keys', value: 'keys4' })
     @SlashChoice({ name: '7 Keys', value: 'keys7' })
     @SlashOption({
@@ -31,7 +30,10 @@ export class Quaver {
     gamemode: string | undefined,
     interaction: CommandInteraction
   ) {
-    const { user } = await request(`/users/full/${encodeURIComponent(query)}`);
+    const id = query ?? await resolveUser(interaction);
+    if (!id) return;
+
+    const { user } = await request(`/users/full/${encodeURIComponent(id)}`);
 
     if (!user) {
       return interaction.reply({

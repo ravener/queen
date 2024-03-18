@@ -8,7 +8,7 @@ import {
 } from 'discord.js';
 import { Discord, Guard, Slash, SlashChoice, SlashOption } from 'discordx';
 import { request } from '../utils/api.js';
-import { getGameMode } from '../utils/utils.js';
+import { getGameMode, resolveUser } from '../utils/utils.js';
 import { Grades } from '../utils/emojis.js';
 import {
   Pagination,
@@ -18,8 +18,11 @@ import {
 
 @Discord()
 export class Scores {
-  async resolveUser(query: string, interaction: CommandInteraction) {
-    const { user } = await request(`/users/full/${encodeURIComponent(query)}`);
+  async resolveUser(query: string | undefined, interaction: CommandInteraction) {
+    const id = query ?? await resolveUser(interaction);
+    if (!id) return;
+
+    const { user } = await request(`/users/full/${encodeURIComponent(id)}`);
 
     if (!user) {
       await interaction.reply({
@@ -27,7 +30,7 @@ export class Scores {
         ephemeral: true
       });
 
-      return null;
+      return;
     }
 
     return user;
@@ -40,9 +43,8 @@ export class Scores {
       name: 'user',
       description: 'Username or ID',
       type: ApplicationCommandOptionType.String,
-      required: true
     })
-    query: string,
+    query: string | undefined,
     @SlashChoice({ name: '4 Keys', value: '1' })
     @SlashChoice({ name: '7 Keys', value: '2' })
     @SlashOption({
@@ -108,9 +110,8 @@ export class Scores {
       name: 'user',
       description: 'Username or ID',
       type: ApplicationCommandOptionType.String,
-      required: true
     })
-    query: string,
+    query: string | undefined,
     @SlashChoice({ name: '4 Keys', value: '1' })
     @SlashChoice({ name: '7 Keys', value: '2' })
     @SlashOption({
