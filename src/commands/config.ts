@@ -36,13 +36,4 @@ export class Config {
       content: `Linked account \`${user.info.username}\` (${user.info.id}) successfully.`
     });
   }
-
-  @Slash({ description: 'testing do not use' })
-  async test(interaction: CommandInteraction) {
-    const data = await User.findOneBy({ id: interaction.user.id });
-
-    return interaction.reply({
-      content: `\`\`\`${JSON.stringify(data, null, 2)}\`\`\``
-    })
-  }
 }
