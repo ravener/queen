@@ -1,4 +1,5 @@
 import {
+  Client,
   Discord,
   SimpleCommand,
   SimpleCommandMessage,
@@ -7,6 +8,7 @@ import {
 } from 'discordx';
 import { exec } from 'node:child_process';
 import { inspect, promisify } from 'node:util';
+import { AppDataSource } from '../data-source.js';
 
 const execAsync = promisify(exec);
 
@@ -87,5 +89,15 @@ export class Owner {
     }
 
     return command.message.reply(results);
+  }
+
+  @SimpleCommand({ description: 'Restart/Shutdown the bot', aliases: ['restart', 'shutdown'] })
+  async reboot(command: SimpleCommandMessage, client: Client) {
+    if (command.message.author.id !== '292690616285134850') return;
+
+    await command.message.reply('Shutting down...');
+    await client.destroy();
+    await AppDataSource.destroy();
+    process.exit(0);
   }
 }
