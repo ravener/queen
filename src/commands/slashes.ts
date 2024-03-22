@@ -6,6 +6,7 @@ import {
   SimpleCommandMessage,
   Slash
 } from 'discordx';
+import { humanizeDuration } from '../utils/utils.js';
 
 @Discord()
 export class Example {
@@ -40,11 +41,13 @@ export class Example {
         iconURL: ravener.displayAvatarURL({ size: 128 }),
         url: 'https://discord.gg/DQ2BgNDb6Q'
       })
+      .setThumbnail(client.user!.displayAvatarURL({ size: 128 }))
       .setDescription(
         [
           `▸ **Servers:** ${client.guilds.cache.size.toLocaleString()}`,
           `▸ **Users:** ${users.toLocaleString()}`,
           `▸ **Channels:** ${client.channels.cache.size.toLocaleString()}`,
+          `▸ **Uptime:** ${humanizeDuration(client.uptime!)}`,
           `▸ **Total Memory Usage:** ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(2)} MB`,
           `▸ **Memory Usage:** ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`,
           `▸ **Node.js:** ${process.version}`,

@@ -4,7 +4,8 @@ import {
   ButtonStyle,
   CommandInteraction,
   Embed,
-  EmbedBuilder
+  EmbedBuilder,
+  User
 } from 'discord.js';
 import { Discord, Guard, Slash, SlashChoice, SlashOption } from 'discordx';
 import { request } from '../utils/api.js';
@@ -18,8 +19,8 @@ import {
 
 @Discord()
 export class Scores {
-  async resolveUser(query: string | undefined, interaction: CommandInteraction) {
-    const id = query ?? await resolveUser(interaction);
+  async resolveUser(query: string | undefined, interaction: CommandInteraction, target?: User) {
+    const id = query ?? await resolveUser(interaction, target);
     if (!id) return;
 
     const { user } = await request(`/users/full/${encodeURIComponent(id)}`);
@@ -53,9 +54,15 @@ export class Scores {
       type: ApplicationCommandOptionType.String
     })
     gamemode: string | undefined,
+    @SlashOption({
+      description: 'Lookup a profile saved to someone\'s discord account.',
+      name: 'discord',
+      type: ApplicationCommandOptionType.User
+    })
+    target: User | undefined,
     interaction: CommandInteraction
   ) {
-    const user = await this.resolveUser(query, interaction);
+    const user = await this.resolveUser(query, interaction, target);
     if (!user) return;
     const mode = gamemode ?? getGameMode(user) === 'keys4' ? 1 : 2;
 
@@ -120,9 +127,15 @@ export class Scores {
       type: ApplicationCommandOptionType.String
     })
     gamemode: string | undefined,
+    @SlashOption({
+      description: 'Lookup a profile saved to someone\'s discord account.',
+      name: 'discord',
+      type: ApplicationCommandOptionType.User
+    })
+    target: User | undefined,
     interaction: CommandInteraction
   ) {
-    const user = await this.resolveUser(query, interaction);
+    const user = await this.resolveUser(query, interaction, target);
     if (!user) return;
     const mode = gamemode ?? getGameMode(user) === 'keys4' ? 1 : 2;
 

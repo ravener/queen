@@ -1,13 +1,15 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { User } from './entity/User.js';
+import { UserEntity } from './entity/UserEntity.js';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url: process.env.PG_URL,
   synchronize: true,
-  logging: false,
-  entities: [User],
+  logging: process.env.NODE_ENV === 'production' ? false : true,
+  entities: [UserEntity],
   subscribers: [],
-  migrations: []
+  migrations: [],
+  namingStrategy: new SnakeNamingStrategy()
 });

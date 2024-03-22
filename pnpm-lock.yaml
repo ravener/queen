@@ -12,8 +12,8 @@ dependencies:
     specifier: ^3.5.0
     version: 3.5.0(discord.js@14.14.1)
   '@discordx/utilities':
-    specifier: ^6.2.0
-    version: 6.2.0(discord.js@14.14.1)(discordx@11.9.0)
+    specifier: ^6.3.2
+    version: 6.3.2(discord.js@14.14.1)(discordx@11.9.0)
   discord.js:
     specifier: ^14.14.1
     version: 14.14.1
@@ -32,6 +32,9 @@ dependencies:
   typeorm:
     specifier: ^0.3.20
     version: 0.3.20(pg@8.11.3)(ts-node@10.9.2)
+  typeorm-naming-strategies:
+    specifier: ^4.1.0
+    version: 4.1.0(typeorm@0.3.20)
 
 devDependencies:
   '@types/node':
@@ -159,8 +162,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@discordx/utilities@6.2.0(discord.js@14.14.1)(discordx@11.9.0):
-    resolution: {integrity: sha512-BaZxsm1RdQck338pYAdCICfMjWwBAJZMX2mP/aztcs/hnN+rsT5Sj7iOJf06K/A2BXUJ2hjJ8i9D88gAzTXrFQ==}
+  /@discordx/utilities@6.3.2(discord.js@14.14.1)(discordx@11.9.0):
+    resolution: {integrity: sha512-QEVScsisSM0OJ8Ulza6CuRvMFF2NJfUaDaWqUo9EpyOLKtx/v4HpXviA2EIUpXO7i4t9EvMksbsZ/fg+P/cX8Q==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     peerDependencies:
       discord.js: '>=14 || ^14.0.0-dev'
@@ -964,6 +967,14 @@ packages:
 
   /typedi@0.10.0:
     resolution: {integrity: sha512-v3UJF8xm68BBj6AF4oQML3ikrfK2c9EmZUyLOfShpJuItAqVBHWP/KtpGinkSsIiP6EZyyb6Z3NXyW9dgS9X1w==}
+    dev: false
+
+  /typeorm-naming-strategies@4.1.0(typeorm@0.3.20):
+    resolution: {integrity: sha512-vPekJXzZOTZrdDvTl1YoM+w+sUIfQHG4kZTpbFYoTsufyv9NIBRe4Q+PdzhEAFA2std3D9LZHEb1EjE9zhRpiQ==}
+    peerDependencies:
+      typeorm: ^0.2.0 || ^0.3.0
+    dependencies:
+      typeorm: 0.3.20(pg@8.11.3)(ts-node@10.9.2)
     dev: false
 
   /typeorm@0.3.20(pg@8.11.3)(ts-node@10.9.2):

@@ -1,12 +1,14 @@
-import { CommandInteraction } from "discord.js";
-import { User } from "../entity/User.js";
+import { CommandInteraction, type User } from 'discord.js';
+import { UserEntity } from '../entity/UserEntity.js';
 
 export function getGameMode(user: any): string {
   // Sometimes the user's default game mode is given, sometimes not.
   const mode = user.info.information?.default_mode;
 
-  if (mode) return ['keys4', 'keys7'][mode-1];
-  return user.keys7.stats.total_score > user.keys4.stats.total_score ? 'keys7' : 'keys4';
+  if (mode) return ['keys4', 'keys7'][mode - 1];
+  return user.keys7.stats.total_score > user.keys4.stats.total_score
+    ? 'keys7'
+    : 'keys4';
 }
 
 /**
@@ -15,7 +17,7 @@ export function getGameMode(user: any): string {
  * @returns The humanized duration in the format of mm:ss
  */
 export function getDuration(time: number): string {
-  const seconds = Math.floor(time / 1000) % 60 ;
+  const seconds = Math.floor(time / 1000) % 60;
   const minutes = Math.floor((time / (1000 * 60)) % 60);
 
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -46,18 +48,45 @@ export function calculateRating(difficulty: number, accuracy: number): number {
   return difficulty * Math.pow(accuracy / 98, 6);
 }
 
-export async function resolveUser(interaction: CommandInteraction): Promise<string | undefined> {
-  const { id } = interaction.user;
-  const user = await User.findOneBy({ id });
+export async function resolveUser(
+  interaction: CommandInteraction,
+  target?: User
+): Promise<number | undefined> {
+  const { id } = target ?? interaction.user;
+  const user = await UserEntity.findOneBy({ id });
 
   if (!user) {
     await interaction.reply({
-      content: 'You do not have an account linked, either run the command and include a username/id or link your account with the `/link` command.',
+      content:
+        id === interaction.user.id
+          ? 'You do not have an account linked, either run the command and include a username/id or link your account with the `/link` command.'
+          : 'That user does not have a linked account to their Discord, ask them to link their account with the `/link` command!',
       ephemeral: true
     });
 
     return;
   }
 
-  return user.quaverID;
+  return user.quaverId;
+}
+
+/**
+ * Convert milliseconds into human readable duration string.
+ */
+export function humanizeDuration(time: number) {
+  if (time < 1000) return `${time} ms`;
+
+  const seconds = Math.floor(time / 1000) % 60;
+  const minutes = Math.floor((time / (1000 * 60)) % 60);
+  const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+  const days = Math.floor((time / (1000 * 60 * 60 * 24)) % 7);
+
+  return [
+    `${days} day${days > 1 ? 's' : ''}`,
+    `${hours} hour${hours > 1 ? 's' : ''}`,
+    `${minutes} minute${minutes > 1 ? 's' : ''}`,
+    `${seconds} second${seconds > 1 ? 's' : ''}`
+  ]
+    .filter((time) => !time.startsWith('0'))
+    .join(', ');
 }

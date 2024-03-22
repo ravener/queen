@@ -1,6 +1,7 @@
 import {
   Client,
   Discord,
+  Guard,
   SimpleCommand,
   SimpleCommandMessage,
   SimpleCommandOption,
@@ -9,10 +10,20 @@ import {
 import { exec } from 'node:child_process';
 import { inspect, promisify } from 'node:util';
 import { AppDataSource } from '../data-source.js';
+import { IsGuardUserCallback, IsGuildUser } from '@discordx/utilities';
 
 const execAsync = promisify(exec);
 
+const OwnerOnly: IsGuardUserCallback = ({ user }) => {
+  if (!user) {
+    return false;
+  }
+
+  return user.id == '292690616285134850';
+};
+
 @Discord()
+@Guard(IsGuildUser(OwnerOnly))
 export class Owner {
   codeBlock(code: string, language = 'js') {
     return `\`\`\`${language}\n${code}\n\`\`\``;
@@ -32,9 +43,9 @@ export class Owner {
       type: SimpleCommandOptionType.String
     })
     code: string,
-    command: SimpleCommandMessage
+    command: SimpleCommandMessage,
+    client: Client
   ) {
-    if (command.message.author.id !== '292690616285134850') return;
     if (!command.isValid()) return command.sendUsageSyntax();
 
     const clean = this.cleanCode(code);
@@ -67,7 +78,6 @@ export class Owner {
     code: string,
     command: SimpleCommandMessage
   ) {
-    if (command.message.author.id !== '292690616285134850') return;
     if (!command.isValid()) return command.sendUsageSyntax();
     const clean = this.cleanCode(code);
 
@@ -93,11 +103,9 @@ export class Owner {
 
   @SimpleCommand({ description: 'Restart/Shutdown the bot', aliases: ['restart', 'shutdown'] })
   async reboot(command: SimpleCommandMessage, client: Client) {
-    if (command.message.author.id !== '292690616285134850') return;
-
     await command.message.reply('Shutting down...');
     await client.destroy();
     await AppDataSource.destroy();
-    process.exit(0);
+    process.exit();
   }
 }

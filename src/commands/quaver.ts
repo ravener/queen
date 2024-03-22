@@ -2,7 +2,8 @@ import {
   ApplicationCommandOptionType,
   CommandInteraction,
   Embed,
-  EmbedBuilder
+  EmbedBuilder,
+  User
 } from 'discord.js';
 import { Discord, Guard, Slash, SlashChoice, SlashOption } from 'discordx';
 import { getGameMode, resolveUser } from '../utils/utils.js';
@@ -28,9 +29,15 @@ export class Quaver {
       type: ApplicationCommandOptionType.String
     })
     gamemode: string | undefined,
+    @SlashOption({
+      description: 'Lookup a profile saved to someone\'s discord account.',
+      name: 'discord',
+      type: ApplicationCommandOptionType.User
+    })
+    target: User | undefined,
     interaction: CommandInteraction
   ) {
-    const id = query ?? await resolveUser(interaction);
+    const id = query ?? await resolveUser(interaction, target);
     if (!id) return;
 
     const { user } = await request(`/users/full/${encodeURIComponent(id)}`);

@@ -2,7 +2,7 @@ import { RateLimit, TIME_UNIT } from '@discordx/utilities';
 import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
 import { Discord, Guard, Slash, SlashOption } from 'discordx';
 import { request } from '../utils/api.js';
-import { User } from '../entity/User.js';
+import { UserEntity } from '../entity/UserEntity.js';
 
 @Discord()
 export class Config {
@@ -27,9 +27,9 @@ export class Config {
       });
     }
 
-    const data = new User();
+    const data = new UserEntity();
     data.id = interaction.user.id;
-    data.quaverID = user.info.id;
+    data.quaverId = user.info.id;
     await data.save();
 
     return interaction.reply({
