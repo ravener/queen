@@ -1,17 +1,42 @@
-import type { ArgsOf } from 'discordx';
+import type { ArgsOf, Client } from 'discordx';
 import { Discord, On } from 'discordx';
 import { request } from '../utils/api.js';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, Message } from 'discord.js';
 import { calculateRating, getDuration, ratingEmoji } from '../utils/utils.js';
+import { reply } from '@skyra/editable-commands';
 
 @Discord()
 export class Example {
   #cooldown = new Set();
 
   @On()
-  async messageCreate([message]: ArgsOf<'messageCreate'>): Promise<void> {
+  async messageCreate([message]: ArgsOf<'messageCreate'>, client: Client): Promise<void> {
     console.log(message.author.username, 'said:', message.content);
+    await this.handleCommands(message, client);
+    await this.handleMaps(message);
+  }
 
+  @On()
+  async messageUpdate([old, message]: ArgsOf<'messageUpdate'>, client: Client) {
+    if (old.content === message.content) return;
+
+    await this.handleCommands(message as Message, client);
+  }
+
+  async handleCommands(message: Message, client: Client): Promise<void> {
+    if (message.webhookId !== null) return;
+    if (message.system) return;
+    if (message.author.bot) return;
+
+    try {
+      await client.executeCommand(message);
+    } catch (err: any) {
+      console.error(err);
+      await reply(message, `An error occurred executing command: \`${err.toString()}\``).catch(() => null);
+    }
+  }
+
+  async handleMaps(message: Message): Promise<void> {
     if (this.#cooldown.has(message.author.id)) return console.log('god damn abusers');
 
     const match = message.content.match(

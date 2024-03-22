@@ -3,7 +3,7 @@ export const BASE_URL = 'https://api.quavergame.com/v1';
 export async function request(endpoint: string) {
   const response = await fetch(BASE_URL + endpoint, {
     headers: {
-      'User-Agent': 'Queen Discord Bot',
+      'User-Agent': 'Queen Discord Bot contact@ravener.is-a.dev',
       'Accept': 'application/json'
     }
   });

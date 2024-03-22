@@ -25,7 +25,3 @@ export const bot = new Client({
     prefix: process.env.NODE_ENV === 'production' ? 'q!' : 'q.'
   }
 });
-
-bot.on('messageCreate', async (message: Message) => {
-  await bot.executeCommand(message);
-});

@@ -14,6 +14,9 @@ dependencies:
   '@discordx/utilities':
     specifier: ^6.3.2
     version: 6.3.2(discord.js@14.14.1)(discordx@11.9.0)
+  '@skyra/editable-commands':
+    specifier: ^3.0.1
+    version: 3.0.1
   discord.js:
     specifier: ^14.14.1
     version: 14.14.1
@@ -228,6 +231,11 @@ packages:
   /@sapphire/snowflake@3.5.1:
     resolution: {integrity: sha512-BxcYGzgEsdlG0dKAyOm0ehLGm2CafIrfQTZGWgkfKYbj+pNNsorZ7EotuZukc2MT70E0UbppVbtpBrqpzVzjNA==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+    dev: false
+
+  /@skyra/editable-commands@3.0.1:
+    resolution: {integrity: sha512-Dvx7k9D3XMVHT8+GTagh+/87RIOmYHx5uVsETFjUx3DutbTpNcynYsoHA+U4JcKSLj4ziR5zk0xgYOAMBNYIlw==}
+    engines: {node: '>=16.6', npm: '>=7.24.2'}
     dev: false
 
   /@sqltools/formatter@1.2.5:

@@ -11,6 +11,7 @@ import { exec } from 'node:child_process';
 import { inspect, promisify } from 'node:util';
 import { AppDataSource } from '../data-source.js';
 import { IsGuardUserCallback, IsGuildUser } from '@discordx/utilities';
+import { reply } from '@skyra/editable-commands';
 
 const execAsync = promisify(exec);
 
@@ -55,12 +56,12 @@ export class Owner {
       const output = inspect(results, { depth: 0, maxArrayLength: null });
 
       if (output.length < 1990) {
-        return command.message.reply(this.codeBlock(output));
+        return reply(command.message, this.codeBlock(output));
       } else {
-        return command.message.reply('Output too long to send');
+        return reply(command.message, 'Output too long to send');
       }
     } catch (err: any) {
-      return command.message.reply(this.codeBlock(err.toString()));
+      return reply(command.message, this.codeBlock(err.toString()));
     }
   }
 
@@ -89,16 +90,16 @@ export class Owner {
     const outerr = result.stderr ? `**\`ERROR\`**${'```prolog\n' + result.stderr + '```'}` : '';
 
     if (output === '' && outerr === '') {
-      return command.message.reply('No output returned.');
+      return reply(command.message, 'No output returned.');
     }
 
     const results = [output, outerr].join('\n');
 
     if (results.length > 2000) {
-      return command.message.reply('Output too long to send.');
+      return reply(command.message, 'Output too long to send.');
     }
 
-    return command.message.reply(results);
+    return reply(command.message, results);
   }
 
   @SimpleCommand({ description: 'Restart/Shutdown the bot', aliases: ['restart', 'shutdown'] })

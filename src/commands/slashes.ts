@@ -7,6 +7,7 @@ import {
   Slash
 } from 'discordx';
 import { humanizeDuration } from '../utils/utils.js';
+import { reply } from '@skyra/editable-commands';
 
 @Discord()
 export class Example {
@@ -55,6 +56,6 @@ export class Example {
         ].join('\n')
       );
 
-    return command.message.reply({ embeds: [embed] });
+    return reply(command.message, { embeds: [embed] });
   }
 }
