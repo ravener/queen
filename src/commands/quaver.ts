@@ -2,7 +2,6 @@
 import {
   ApplicationCommandOptionType,
   CommandInteraction,
-  Embed,
   EmbedBuilder,
   User
 } from 'discord.js';

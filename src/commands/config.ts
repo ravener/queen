@@ -27,9 +27,11 @@ export class Config {
       });
     }
 
-    const data = new UserEntity();
-    data.id = interaction.user.id;
-    data.quaverId = user.info.id;
+    const data = UserEntity.create({
+      id: interaction.user.id,
+      quaverId: user.info.id
+    });
+
     await data.save();
 
     return interaction.reply({
